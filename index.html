@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Nimza Salon</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <style>
+        :root {
+            --primary: #f472b6;
+            --secondary: #fde2f3;
+            --dark: #333;
+            --light: #fff;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            color: var(--dark);
+            background: #fafafa;
+        }
+
+        /* NAVBAR */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 40px;
+            background: var(--light);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            color: var(--primary);
+        }
+
+        nav a {
+            text-decoration: none;
+            margin-left: 20px;
+            font-weight: 500;
+            color: var(--dark);
+        }
+
+        nav a:hover {
+            color: var(--primary);
+        }
+
+        /* HERO */
+        .hero {
+            height: 90vh;
+            background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)),
+            url("https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9") center/cover;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            color: white;
+            padding: 20px;
+        }
+
+        .hero h2 {
+            font-size: 3rem;
+            font-family: 'Playfair Display', serif;
+        }
+
+        .hero p {
+            margin-top: 10px;
+            font-size: 1.2rem;
+        }
+
+        .hero button {
+            margin-top: 25px;
+            padding: 14px 35px;
+            border-radius: 30px;
+            border: none;
+            background: var(--primary);
+            color: white;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .hero button:hover {
+            transform: scale(1.05);
+        }
+
+        section {
+            padding: 70px 40px;
+            text-align: center;
+        }
+
+        section h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.2rem;
+            margin-bottom: 20px;
+        }
+
+        /* PRICE LIST */
+        .price-section {
+            background: var(--secondary);
+        }
+
+        .price-container {
+            max-width: 900px;
+            margin: auto;
+        }
+
+        .subtitle {
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .date {
+            margin-bottom: 40px;
+        }
+
+        .price-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+            text-align: left;
+        }
+
+        .price-card h3 {
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+
+        .price-card h4 {
+            margin-top: 20px;
+            font-weight: 600;
+        }
+
+        .price-card ul {
+            list-style: none;
+        }
+
+        .price-card li {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px dashed #ddd;
+        }
+
+        .contact {
+            margin-top: 30px;
+            font-weight: bold;
+        }
+
+        /* SERVICES */
+        .service-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        .service {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+            font-size: 1.1rem;
+            transition: transform 0.3s;
+        }
+
+        .service:hover {
+            transform: translateY(-8px);
+        }
+
+        /* ABOUT */
+        .about p {
+            max-width: 600px;
+            margin: auto;
+            font-size: 1.1rem;
+        }
+
+        /* CONTACT */
+        .contact form {
+            max-width: 350px;
+            margin: 30px auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .contact input,
+        .contact select {
+            padding: 12px;
+            margin-bottom: 12px;
+            border-radius: 10px;
+            border: 1px solid #ccc;
+        }
+
+        .contact button {
+            padding: 12px;
+            border-radius: 10px;
+            border: none;
+            background: var(--primary);
+            color: white;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+
+        footer {
+            background: var(--primary);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        @media (max-width: 600px) {
+            .hero h2 {
+                font-size: 2.2rem;
+            }
+        }
+
+
+.whatsapp-float {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: #25D366;
+    color: white;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    text-decoration: none;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+    z-index: 1000;
+    transition: transform 0.3s;
+}
+
+.whatsapp-float:hover {
+    transform: scale(1.1);
+}
+
+
+.contact {
+    background: white;
+}
+
+.contact h2 {
+    margin-bottom: 15px;
+}
+
+.contact form {
+    background: #fde2f3;
+    padding: 30px;
+    border-radius: 20px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+
+
+.contact input[type="date"],
+.contact input[type="time"] {
+    font-family: inherit;
+    color: #333;
+    cursor: pointer;
+}
+
+
+.booking {
+    background: #fff;
+}
+
+.booking form {
+    max-width: 400px;
+    margin: 30px auto 0;
+    background: var(--secondary);
+    padding: 35px;
+    border-radius: 25px;
+    box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+    text-align: left;
+}
+
+.booking label {
+    display: block;
+    font-size: 0.9rem;
+    margin-bottom: 12px;
+}
+
+.booking input,
+.booking select {
+    width: 100%;
+    padding: 12px;
+    margin-top: 6px;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    font-family: inherit;
+}
+
+.booking button {
+    margin-top: 20px;
+    width: 100%;
+    padding: 14px;
+    border-radius: 30px;
+    border: none;
+    background: var(--primary);
+    color: white;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: transform 0.3s;
+}
+
+.booking button:hover {
+    transform: scale(1.05);
+}
+
+
+    </style>
+</head>
+
+<body>
+
+<header class="navbar">
+    <h1 class="logo">Nimza Salon</h1>
+    <nav>
+        <a href="#home">Home</a>
+        <a href="#services">Services</a>
+        <a href="#about">About</a>
+        <a href="#contact">Contact</a>
+    </nav>
+</header>
+
+<section id="home" class="hero">
+    <h2>Feel Beautiful. Be Confident.</h2>
+    <p>Your beauty, our passion.</p>
+   <button onclick="document.getElementById('contact').scrollIntoView({ behavior: 'smooth' })">
+    Book Appointment
+</button>
+
+</section>
+
+<section class="price-section">
+    <div class="price-container">
+        <h2>Price List</h2>
+        <p class="subtitle">Back to School Special</p>
+        <p class="date">05 – 20 January 2026</p>
+
+        <div class="price-card">
+            <h3>Girls</h3>
+            <ul>
+                <li><span>Free Hand</span><span>R80</span></li>
+                <li><span>Straight Back</span><span>R160</span></li>
+                <li><span>Straight Up</span><span>R180</span></li>
+            </ul>
+
+            <h4>Knotless Braids</h4>
+            <ul>
+                <li><span>Short</span><span>R220</span></li>
+                <li><span>Normal</span><span>R250</span></li>
+                <li><span>Lemonade</span><span>R260</span></li>
+                <li><span>Fulani</span><span>R260</span></li>
+            </ul>
+        </div>
+
+        <div class="price-card">
+            <h3>Boys</h3>
+            <ul>
+                <li><span>Cut and Dye</span><span>R50</span></li>
+            </ul>
+        </div>
+
+        <p class="contact">📞 068 425 2483</p>
+    </div>
+</section>
+
+<section id="services" class="services">
+    <h2>Our Services</h2>
+    <div class="service-list">
+        <div class="service"><i class="fa-solid fa-scissors"></i><br>Hair Styling</div>
+        <div class="service"><i class="fa-solid fa-paintbrush"></i><br>Nails</div>
+        <div class="service"><i class="fa-solid fa-face-smile"></i><br>Makeup</div>
+        <div class="service"><i class="fa-solid fa-braille"></i><br>Braiding</div>
+    </div>
+</section>
+
+<section id="about" class="about">
+    <h2>About Us</h2>
+    <p>
+        Nimza Salon is dedicated to making you feel confident and beautiful.
+        Our professional stylists deliver top-quality services with care and passion.
+    </p>
+</section>
+
+<section id="contact" class="booking">
+    <h2>Book an Appointment</h2>
+    <p class="subtitle">Quick & easy WhatsApp booking</p>
+
+    <form id="bookingForm">
+        <label>
+            Full Name
+            <input type="text" id="name" required>
+        </label>
+
+        <label>
+            Phone Number
+            <input type="tel" id="phone" required>
+        </label>
+
+        <label>
+            Select Date
+            <input type="date" id="date" required>
+        </label>
+
+        <label>
+            Select Time
+            <input type="time" id="time" required>
+        </label>
+
+        <label>
+            Service
+            <select id="service" required>
+                <option value="">Choose Service</option>
+                <option>Hair Styling</option>
+                <option>Braiding</option>
+                <option>Nails</option>
+                <option>Makeup</option>
+            </select>
+        </label>
+
+        <label>
+    Payment Method
+    <select id="payment" required>
+        <option value="">Choose Payment Method</option>
+        <option value="pay_later">Pay at Salon</option>
+        <option value="pay_online">Pay Online</option>
+    </select>
+</label>
+
+
+        <button type="submit">Confirm Booking</button>
+    </form>
+</section>
+
+
+
+
+<a href="https://wa.me/27684252483" class="whatsapp-float" target="_blank">
+    <i class="fa-brands fa-whatsapp"></i>
+</a>
+
+
+<footer>
+    <p>© 2026 Nimza Salon</p>
+</footer>
+
+
+
+
+
+
+<script>
+const dateInput = document.getElementById("date");
+const timeInput = document.getElementById("time");
+const payment = document.getElementById("payment").value;
+const today = new Date().toISOString().split("T")[0];
+dateInput.min = today;
+
+const servicePrices = {
+    "Hair Styling": 180,
+    "Braiding": 250,
+    "Nails": 150,
+    "Makeup": 200
+};
+
+
+timeInput.min = "08:00";
+timeInput.max = "18:00";
+
+document.getElementById("bookingForm").addEventListener("submit", function(e) {
+    e.preventDefault();
+
+    const name = document.getElementById("name").value.trim();
+    const phone = document.getElementById("phone").value.trim();
+    const service = document.getElementById("service").value;
+    const date = dateInput.value;
+    const time = timeInput.value;
+
+   if (!name || !phone || !service || !date || !time || !payment) {
+    alert("Please fill in all fields");
+    return;
+}
+
+    const message =
+        `Hello Nimza Salon 👋%0A%0A` +
+        `👤 Name: ${name}%0A` +
+        `📞 Phone: ${phone}%0A` +
+        `💇 Service: ${service}%0A` +
+        `📅 Date: ${date}%0A` +
+        `⏰ Time: ${time}%0A%0A` +
+        `💳 Payment: ${payment === "pay_online" ? "Online" : "At Salon"}%0A%0A` +
+        `I would like to book an appointment.`;
+
+    window.open(`https://wa.me/27684252483?text=${message}`, "_blank");
+
+if(payment === "pay_later") {
+        // Open WhatsApp for booking
+        window.open(`https://wa.me/27684252483?text=${message}`, "_blank");
+    } else if(payment === "pay_online") {
+        // Online payment with PayFast
+        const amount = servicePrices[service] || 0;
+
+        const payFastURL = 
+        `https://www.payfast.co.za/eng/process?` +
+        `merchant_id=YOUR_MERCHANT_ID&` +
+        `merchant_key=YOUR_MERCHANT_KEY&` +
+        `amount=${amount}&` +
+        `item_name=${service}&` +
+        `return_url=https://yourwebsite.com/success&` +
+        `cancel_url=https://yourwebsite.com/cancel`;
+
+        // Open WhatsApp first to notify salon
+        window.open(`https://wa.me/27684252483?text=${message}`, "_blank");
+
+        // Redirect to PayFast
+        window.open(payFastURL, "_blank");
+    }
+
+
+});
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>
