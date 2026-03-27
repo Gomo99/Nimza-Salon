@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Dashboard | Nimza Salon</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  body {
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+  .dark-mode {
+    background-color: #000000;
+    color: #ffffff;
+  }
+  .light-mode {
+    background-color: #f3f4f6;
+    color: #111827;
+  }
+  .light-mode .border-white\/20 {
+    border-color: #e5e7eb !important;
+  }
+  .light-mode .bg-transparent {
+    background-color: #ffffff;
+  }
+  .light-mode table td, .light-mode table th {
+    border-color: #e5e7eb;
+  }
+  .light-mode .bg-white\/5 {
+    background-color: #f9fafb;
+  }
+  .transition-all {
+    transition: all 0.3s ease;
+  }
+  .delete-btn {
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .delete-btn:hover {
+    transform: scale(1.1);
+  }
+  .search-highlight {
+    background-color: rgba(200, 169, 106, 0.3);
+    font-weight: bold;
+  }
+  .light-mode .search-highlight {
+    background-color: rgba(200, 169, 106, 0.2);
+  }
+  
+  /* Modal Animation */
+  @keyframes modalSlideIn {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+  
+  .modal-animation {
+    animation: modalSlideIn 0.2s ease-out;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  
+  .modal-backdrop {
+    animation: fadeIn 0.2s ease-out;
+  }
+  
+  /* Ensure inputs are clickable */
+  input, select, button {
+    pointer-events: auto !important;
+  }
+  
+  .hidden {
+    display: none !important;
+  }
+</style>
+</head>
+
+<body class="bg-black text-white font-body p-6 dark-mode" id="mainBody">
+
+<div id="loginPage" class="max-w-md mx-auto mt-20">
+  <h1 class="text-3xl mb-6 text-center font-semibold">Admin Login</h1>
+  <form id="loginForm" class="space-y-4">
+    <input id="adminEmail" type="email" placeholder="Email" class="w-full p-3 bg-transparent border border-white/20 rounded focus:outline-none focus:border-gold transition-all" required>
+    <input id="adminPass" type="password" placeholder="Password" class="w-full p-3 bg-transparent border border-white/20 rounded focus:outline-none focus:border-gold transition-all" required>
+    <button type="submit" class="w-full border border-gold py-3 hover:bg-gold hover:text-black transition rounded font-semibold">Login</button>
+  </form>
+</div>
+
+<div id="dashboard" class="hidden max-w-7xl mx-auto">
+  <!-- Header with Dark Mode Toggle -->
+  <div class="flex flex-wrap justify-between items-center gap-4 mb-6">
+    <h2 class="text-2xl font-semibold">Bookings Dashboard</h2>
+    <div class="flex gap-3">
+      <button id="darkModeToggle" class="border border-gold px-4 py-2 hover:bg-gold hover:text-black transition rounded flex items-center gap-2">
+        <span id="modeIcon">🌙</span>
+        <span id="modeText">Dark Mode</span>
+      </button>
+      <button id="logoutBtn" class="border border-gold px-4 py-2 hover:bg-gold hover:text-black transition rounded">Logout</button>
+    </div>
+  </div>
+
+  <!-- Stats Cards -->
+  <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+    <div class="bg-white/5 p-4 rounded-lg border border-gold/30 transition-all">
+      <h3 class="text-sm text-gray-400">Total Bookings</h3>
+      <p class="text-2xl font-bold text-gold" id="totalBookings">0</p>
+    </div>
+    <div class="bg-white/5 p-4 rounded-lg border border-gold/30 transition-all">
+      <h3 class="text-sm text-gray-400">Today's Appointments</h3>
+      <p class="text-2xl font-bold text-gold" id="todayBookings">0</p>
+    </div>
+    <div class="bg-white/5 p-4 rounded-lg border border-gold/30 transition-all">
+      <h3 class="text-sm text-gray-400">Pending</h3>
+      <p class="text-2xl font-bold text-orange-400" id="pendingCount">0</p>
+    </div>
+    <div class="bg-white/5 p-4 rounded-lg border border-gold/30 transition-all">
+      <h3 class="text-sm text-gray-400">Confirmed</h3>
+      <p class="text-2xl font-bold text-green-400" id="confirmedCount">0</p>
+    </div>
+  </div>
+
+  <!-- Search & Filter Section -->
+  <div class="flex flex-wrap gap-4 mb-6 items-end">
+    <div class="flex-1 min-w-[200px]">
+      <label class="block text-sm mb-1 text-gray-400">Search</label>
+      <input type="text" id="searchInput" placeholder="Search by name, service, phone..." 
+             class="w-full p-2 bg-transparent border border-white/20 rounded focus:outline-none focus:border-gold transition-all">
+    </div>
+    <div>
+      <label class="block text-sm mb-1 text-gray-400">Status Filter</label>
+      <select id="statusFilter" class="p-2 bg-transparent border border-white/20 rounded focus:outline-none focus:border-gold">
+        <option value="all">All Status</option>
+        <option value="Pending">Pending</option>
+        <option value="Confirmed">Confirmed</option>
+        <option value="Cancelled">Cancelled</option>
+      </select>
+    </div>
+    <div>
+      <label class="block text-sm mb-1 text-gray-400">Date Filter</label>
+      <input type="date" id="dateFilter" class="p-2 bg-transparent border border-white/20 rounded focus:outline-none focus:border-gold">
+    </div>
+    <div>
+      <label class="block text-sm mb-1 text-gray-400">Service Filter</label>
+      <select id="serviceFilter" class="p-2 bg-transparent border border-white/20 rounded focus:outline-none focus:border-gold">
+        <option value="all">All Services</option>
+        <option value="Hair Styling">Hair Styling</option>
+        <option value="Braiding">Braiding</option>
+        <option value="Makeup">Makeup</option>
+      </select>
+    </div>
+    <button id="clearFiltersBtn" class="border border-gold px-4 py-2 hover:bg-gold hover:text-black transition rounded">
+      Clear Filters
+    </button>
+  </div>
+
+  <!-- Bookings Table -->
+  <div class="overflow-x-auto">
+    <table class="w-full border-collapse text-left">
+      <thead>
+        <tr class="border-b border-white/20">
+          <th class="py-2 px-4">Name</th>
+          <th class="py-2 px-4">Service</th>
+          <th class="py-2 px-4">Date</th>
+          <th class="py-2 px-4">Time</th>
+          <th class="py-2 px-4">Payment</th>
+          <th class="py-2 px-4">Status</th>
+          <th class="py-2 px-4 text-center">Actions</th>
+         </>
+      </thead>
+      <tbody id="bookingTable"></tbody>
+    </table>
+  </div>
+  
+  <!-- No Results Message -->
+  <div id="noResults" class="text-center py-8 text-gray-400 hidden">
+    No bookings found matching your criteria
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
+import { getFirestore, collection, query, orderBy, onSnapshot, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
+
+// Firebase config
+const firebaseConfig = {
+  apiKey: "AIzaSyCTvc1Ng-Ku3MobgVT1kpQF4TkcppYGHo8",
+  authDomain: "nimza-salon.firebaseapp.com",
+  projectId: "nimza-salon"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// === MODAL NOTIFICATION SYSTEM ===
+function showModal(title, message, type = "success", onConfirm = null, showCancel = false) {
+  // Remove any existing modal
+  const existingModal = document.querySelector(".custom-modal");
+  if (existingModal) existingModal.remove();
+  
+  const icons = {
+    success: "✅",
+    error: "❌",
+    warning: "⚠️",
+    info: "ℹ️"
+  };
+  
+  const colors = {
+    success: "border-green-500",
+    error: "border-red-500",
+    warning: "border-orange-500",
+    info: "border-gold"
+  };
+  
+  const modal = document.createElement("div");
+  modal.className = "custom-modal fixed inset-0 bg-black/80 flex items-center justify-center z-50 modal-backdrop";
+  modal.innerHTML = `
+    <div class="bg-neutral-900 rounded-xl p-6 max-w-md w-full mx-4 border-2 ${colors[type]} shadow-2xl modal-animation">
+      <div class="text-center">
+        <div class="text-5xl mb-4">${icons[type]}</div>
+        <h3 class="text-xl font-semibold mb-3 text-${type === 'success' ? 'green' : type === 'error' ? 'red' : 'gold'}-400">${title}</h3>
+        <p class="text-gray-300 mb-6">${message}</p>
+        <div class="flex gap-3 justify-center">
+          <button class="confirm-btn bg-gold text-black px-6 py-2 rounded hover:bg-gold/80 transition font-medium">
+            ${showCancel ? 'Confirm' : 'OK'}
+          </button>
+          ${showCancel ? '<button class="cancel-btn border border-white/20 px-6 py-2 rounded hover:bg-white/10 transition">Cancel</button>' : ''}
+        </div>
+      </div>
+    </div>
+  `;
+  
+  document.body.appendChild(modal);
+  
+  // Add event listeners
+  const confirmBtn = modal.querySelector(".confirm-btn");
+  const cancelBtn = modal.querySelector(".cancel-btn");
+  
+  confirmBtn.onclick = () => {
+    if (onConfirm) onConfirm();
+    modal.remove();
+  };
+  
+  if (cancelBtn) {
+    cancelBtn.onclick = () => modal.remove();
+  }
+  
+  // Close on backdrop click
+  modal.onclick = (e) => {
+    if (e.target === modal) modal.remove();
+  };
+  
+  // Auto close for info/success after 3 seconds
+  if (type === "success" || type === "info") {
+    setTimeout(() => {
+      if (modal && modal.remove) modal.remove();
+    }, 3000);
+  }
+}
+
+// Confirmation modal for delete
+function showConfirmModal(title, message, onConfirm) {
+  showModal(title, message, "warning", onConfirm, true);
+}
+
+// Success modal
+function showSuccessModal(message) {
+  showModal("Success", message, "success");
+}
+
+// Error modal
+function showErrorModal(message) {
+  showModal("Error", message, "error");
+}
+
+// Info modal
+function showInfoModal(message) {
+  showModal("Information", message, "info");
+}
+
+// === ADMIN LOGIN ===
+const ADMIN_EMAIL = "admin@nimza.com";
+const ADMIN_PASS = "Password123";
+
+const loginForm = document.getElementById("loginForm");
+const loginPage = document.getElementById("loginPage");
+const dashboard = document.getElementById("dashboard");
+
+let allBookings = [];
+let unsubscribeSnapshot = null;
+
+// Remove any existing event listeners by replacing the form
+function resetLoginForm() {
+  // Clear any lingering modals
+  const existingModals = document.querySelectorAll(".custom-modal");
+  existingModals.forEach(modal => modal.remove());
+  
+  // Reset form values
+  document.getElementById("adminEmail").value = "";
+  document.getElementById("adminPass").value = "";
+  
+  // Ensure the login page is visible and interactive
+  loginPage.classList.remove("hidden");
+  dashboard.classList.add("hidden");
+  
+  // Re-attach login event listener (remove old one first)
+  const newLoginForm = loginForm.cloneNode(true);
+  loginForm.parentNode.replaceChild(newLoginForm, loginForm);
+  
+  // Get the new form reference
+  const updatedLoginForm = document.getElementById("loginForm");
+  const updatedEmail = document.getElementById("adminEmail");
+  const updatedPass = document.getElementById("adminPass");
+  
+  // Add fresh event listener
+  updatedLoginForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const email = updatedEmail.value;
+    const pass = updatedPass.value;
+    
+    if(email === ADMIN_EMAIL && pass === ADMIN_PASS){
+      loginPage.classList.add("hidden");
+      dashboard.classList.remove("hidden");
+      loadBookings();
+      showSuccessModal("Welcome back! Dashboard is now loading your bookings.");
+    } else {
+      showErrorModal("Invalid credentials! Please check your email and password.");
+    }
+  });
+}
+
+loginForm.addEventListener("submit", (e) => {
+  e.preventDefault();
+  const email = document.getElementById("adminEmail").value;
+  const pass = document.getElementById("adminPass").value;
+  
+  if(email === ADMIN_EMAIL && pass === ADMIN_PASS){
+    loginPage.classList.add("hidden");
+    dashboard.classList.remove("hidden");
+    loadBookings();
+    showSuccessModal("Welcome back! Dashboard is now loading your bookings.");
+  } else {
+    showErrorModal("Invalid credentials! Please check your email and password.");
+  }
+});
+
+// LOGOUT - Fixed version
+document.getElementById("logoutBtn").addEventListener("click", () => {
+  showConfirmModal("Logout", "Are you sure you want to logout?", () => {
+    // Unsubscribe from Firebase listener
+    if (unsubscribeSnapshot) {
+      unsubscribeSnapshot();
+      unsubscribeSnapshot = null;
+    }
+    
+    // Clear all bookings data
+    allBookings = [];
+    
+    // Clear the table
+    const table = document.getElementById("bookingTable");
+    if (table) table.innerHTML = "";
+    
+    // Reset stats
+    document.getElementById("totalBookings").textContent = "0";
+    document.getElementById("todayBookings").textContent = "0";
+    document.getElementById("pendingCount").textContent = "0";
+    document.getElementById("confirmedCount").textContent = "0";
+    
+    // Hide dashboard and show login page
+    dashboard.classList.add("hidden");
+    loginPage.classList.remove("hidden");
+    
+    // Reset and re-enable login form fields
+    const emailInput = document.getElementById("adminEmail");
+    const passInput = document.getElementById("adminPass");
+    if (emailInput) emailInput.value = "";
+    if (passInput) passInput.value = "";
+    
+    // Force focus on email field
+    setTimeout(() => {
+      if (emailInput) {
+        emailInput.focus();
+        emailInput.disabled = false;
+        passInput.disabled = false;
+      }
+    }, 100);
+    
+    showSuccessModal("Logged out successfully!");
+  });
+});
+
+// === DARK MODE TOGGLE ===
+const darkModeToggle = document.getElementById("darkModeToggle");
+const mainBody = document.getElementById("mainBody");
+const modeIcon = document.getElementById("modeIcon");
+const modeText = document.getElementById("modeText");
+
+darkModeToggle.addEventListener("click", () => {
+  if (mainBody.classList.contains("dark-mode")) {
+    mainBody.classList.remove("dark-mode");
+    mainBody.classList.add("light-mode");
+    modeIcon.textContent = "☀️";
+    modeText.textContent = "Light Mode";
+    localStorage.setItem("theme", "light");
+    showInfoModal("Light mode activated");
+  } else {
+    mainBody.classList.remove("light-mode");
+    mainBody.classList.add("dark-mode");
+    modeIcon.textContent = "🌙";
+    modeText.textContent = "Dark Mode";
+    localStorage.setItem("theme", "dark");
+    showInfoModal("Dark mode activated");
+  }
+});
+
+// Load saved theme
+const savedTheme = localStorage.getItem("theme");
+if (savedTheme === "light") {
+  mainBody.classList.remove("dark-mode");
+  mainBody.classList.add("light-mode");
+  modeIcon.textContent = "☀️";
+  modeText.textContent = "Light Mode";
+}
+
+// === SEARCH & FILTER FUNCTIONS ===
+const searchInput = document.getElementById("searchInput");
+const statusFilter = document.getElementById("statusFilter");
+const dateFilter = document.getElementById("dateFilter");
+const serviceFilter = document.getElementById("serviceFilter");
+const clearFiltersBtn = document.getElementById("clearFiltersBtn");
+
+function filterBookings() {
+  const searchTerm = searchInput.value.toLowerCase();
+  const statusValue = statusFilter.value;
+  const dateValue = dateFilter.value;
+  const serviceValue = serviceFilter.value;
+  
+  let filtered = [...allBookings];
+  
+  // Apply search filter
+  if (searchTerm) {
+    filtered = filtered.filter(booking => 
+      booking.name?.toLowerCase().includes(searchTerm) ||
+      booking.service?.toLowerCase().includes(searchTerm) ||
+      booking.phone?.toLowerCase().includes(searchTerm) ||
+      booking.payment?.toLowerCase().includes(searchTerm)
+    );
+  }
+  
+  // Apply status filter
+  if (statusValue !== "all") {
+    filtered = filtered.filter(booking => booking.status === statusValue);
+  }
+  
+  // Apply date filter
+  if (dateValue) {
+    filtered = filtered.filter(booking => booking.date === dateValue);
+  }
+  
+  // Apply service filter
+  if (serviceValue !== "all") {
+    filtered = filtered.filter(booking => booking.service === serviceValue);
+  }
+  
+  renderTable(filtered, searchTerm);
+  updateStats(filtered);
+}
+
+function clearFilters() {
+  searchInput.value = "";
+  statusFilter.value = "all";
+  dateFilter.value = "";
+  serviceFilter.value = "all";
+  filterBookings();
+  showInfoModal("All filters have been cleared");
+}
+
+if (searchInput) searchInput.addEventListener("input", filterBookings);
+if (statusFilter) statusFilter.addEventListener("change", filterBookings);
+if (dateFilter) dateFilter.addEventListener("change", filterBookings);
+if (serviceFilter) serviceFilter.addEventListener("change", filterBookings);
+if (clearFiltersBtn) clearFiltersBtn.addEventListener("click", clearFilters);
+
+// Helper function to highlight search term
+function highlightText(text, searchTerm) {
+  if (!searchTerm || !text) return text;
+  const regex = new RegExp(`(${searchTerm})`, 'gi');
+  return text.replace(regex, '<span class="search-highlight">$1</span>');
+}
+
+// === RENDER TABLE WITH HIGHLIGHTING ===
+function renderTable(bookings, searchTerm = "") {
+  const table = document.getElementById("bookingTable");
+  const noResults = document.getElementById("noResults");
+  
+  if (!table) return;
+  
+  if (bookings.length === 0) {
+    table.innerHTML = "";
+    if (noResults) noResults.classList.remove("hidden");
+    return;
+  }
+  
+  if (noResults) noResults.classList.add("hidden");
+  table.innerHTML = "";
+  
+  bookings.forEach(booking => {
+    const id = booking.id;
+    const b = booking;
+    
+    const nameHtml = searchTerm ? highlightText(b.name, searchTerm) : b.name;
+    const serviceHtml = searchTerm ? highlightText(b.service, searchTerm) : b.service;
+    const paymentHtml = searchTerm ? highlightText(b.payment, searchTerm) : b.payment;
+    
+    table.innerHTML += `
+      <tr class="border-b border-white/20 hover:bg-white/5 transition-all">
+        <td class="py-2 px-4">${nameHtml || 'N/A'}</td>
+        <td class="py-2 px-4">${serviceHtml || 'N/A'}</td>
+        <td class="py-2 px-4">${b.date || 'N/A'}</td>
+        <td class="py-2 px-4">${b.time || 'N/A'}</td>
+        <td class="py-2 px-4">${paymentHtml || 'N/A'}</td>
+        <td class="py-2 px-4">
+          <select onchange="window.updateStatus('${id}', this.value)" class="bg-transparent text-white p-1 border border-white/20 rounded focus:outline-none">
+            <option value="Pending" ${b.status === 'Pending' ? 'selected' : ''}>Pending</option>
+            <option value="Confirmed" ${b.status === 'Confirmed' ? 'selected' : ''}>Confirmed</option>
+            <option value="Cancelled" ${b.status === 'Cancelled' ? 'selected' : ''}>Cancelled</option>
+          </select>
+        </td>
+        <td class="py-2 px-4 text-center">
+          <button onclick="window.deleteBooking('${id}')" class="delete-btn text-red-500 hover:text-red-700 transition-all" title="Delete Booking">
+            🗑️
+          </button>
+        </td>
+      </tr>
+    `;
+  });
+}
+
+// === UPDATE STATS ===
+function updateStats(bookings) {
+  const totalBookingsEl = document.getElementById("totalBookings");
+  const todayBookingsEl = document.getElementById("todayBookings");
+  const pendingCountEl = document.getElementById("pendingCount");
+  const confirmedCountEl = document.getElementById("confirmedCount");
+  
+  const today = new Date().toISOString().split('T')[0];
+  
+  if (totalBookingsEl) totalBookingsEl.textContent = bookings.length;
+  if (todayBookingsEl) todayBookingsEl.textContent = bookings.filter(b => b.date === today).length;
+  if (pendingCountEl) pendingCountEl.textContent = bookings.filter(b => b.status === "Pending").length;
+  if (confirmedCountEl) confirmedCountEl.textContent = bookings.filter(b => b.status === "Confirmed").length;
+}
+
+// === LOAD BOOKINGS ===
+function loadBookings() {
+  const q = query(collection(db, "bookings"), orderBy("createdAt", "desc"));
+  
+  if (unsubscribeSnapshot) {
+    unsubscribeSnapshot();
+  }
+  
+  unsubscribeSnapshot = onSnapshot(q, snapshot => {
+    allBookings = [];
+    snapshot.forEach(docSnap => {
+      allBookings.push({
+        id: docSnap.id,
+        ...docSnap.data()
+      });
+    });
+    filterBookings();
+    if (allBookings.length > 0) {
+      // Don't show modal for initial load to avoid spam
+      if (localStorage.getItem("initialLoadDone") !== "true") {
+        localStorage.setItem("initialLoadDone", "true");
+      }
+    }
+  }, error => {
+    console.error("Error loading bookings:", error);
+    showErrorModal("Error loading bookings. Please refresh the page.");
+  });
+}
+
+// === UPDATE STATUS ===
+window.updateStatus = async (id, status) => {
+  try {
+    const bRef = doc(db, "bookings", id);
+    await updateDoc(bRef, { status });
+    showSuccessModal(`Booking status updated to "${status}"`);
+  } catch (error) {
+    console.error("Error updating status:", error);
+    showErrorModal("Error updating booking status");
+  }
+};
+
+// === DELETE FUNCTION ===
+window.deleteBooking = async (id) => {
+  // Find booking details for the modal message
+  const booking = allBookings.find(b => b.id === id);
+  const bookingName = booking ? booking.name : "this booking";
+  
+  showConfirmModal(
+    "Confirm Delete",
+    `Are you sure you want to delete booking for "${bookingName}"? This action cannot be undone.`,
+    async () => {
+      try {
+        const bRef = doc(db, "bookings", id);
+        await deleteDoc(bRef);
+        showSuccessModal(`Booking for "${bookingName}" has been deleted successfully`);
+      } catch (error) {
+        console.error("Error deleting booking:", error);
+        showErrorModal("Error deleting booking. Please try again.");
+      }
+    }
+  );
+};
+
+// Show welcome modal on first load
+setTimeout(() => {
+  if (!localStorage.getItem("welcomeShown") && !dashboard.classList.contains("hidden")) {
+    showInfoModal("Welcome to Nimza Admin Dashboard!\n\nUse the filters to search bookings, update statuses, and manage appointments.");
+    localStorage.setItem("welcomeShown", "true");
+  }
+}, 1000);
+
+// Ensure login page is interactive on page load
+document.addEventListener("DOMContentLoaded", () => {
+  const emailInput = document.getElementById("adminEmail");
+  const passInput = document.getElementById("adminPass");
+  if (emailInput && passInput) {
+    emailInput.disabled = false;
+    passInput.disabled = false;
+  }
+});
+</script>
+
+</body>
+</html>
